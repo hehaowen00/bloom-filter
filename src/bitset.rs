@@ -9,6 +9,10 @@ impl Bitset {
         }
     }
 
+    pub(crate) fn bytes(&self) -> Vec<u8> {
+        self.data.clone()
+    }
+
     pub fn get(&self, idx: usize) -> bool {
         self.data[idx / 8] & (1 << idx % 8) > 0
     }

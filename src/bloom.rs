@@ -1,6 +1,9 @@
 use crate::bitset::Bitset;
 use std::{hash::Hasher, marker::PhantomData};
 
+#[cfg(feature = "serde")]
+use serde::{Deserialize, Serialize};
+
 pub struct Bloom<H>
 where
     H: Hasher + Default,
@@ -38,6 +41,14 @@ where
             size: bits,
             k,
             _marker: PhantomData,
+        }
+    }
+
+    pub fn export(&self) -> ExportedBloom {
+        ExportedBloom {
+            bytes: self.bits.bytes(),
+            size: self.size,
+            k: self.k,
         }
     }
 
@@ -91,4 +102,11 @@ fn m(k: usize, n: usize, f: f64) -> usize {
     let n = n as f64;
     let k = k as f64;
     f64::ceil(-(k * n) / f64::ln(1.0 - f.powf(1.0 / k))) as usize
+}
+
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+pub struct ExportedBloom {
+    bytes: Vec<u8>,
+    size: usize,
+    k: usize,
 }
